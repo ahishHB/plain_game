@@ -1,0 +1,7 @@
+just gravity stuff 0-0.0175
+
+altitude 0-0.0015
+:1.49237,0.04205,-0.02844,0.00172
+//
+weight 0-0.008 maybe do a 2x
+:4.25,0.05
