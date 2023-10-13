@@ -70,8 +70,7 @@ void plane::updatePlane(double r,vector<bool> keys){
 	if(keys[6]){
 		for(int i=0;i<allGuns.size();i=i+1){
 			if(counter%allGuns[i].rateOfFire==0&&allGuns[i].ammo||allGuns[i].firstShot){
-				allBullets.push_back({px+25*cos(rotation),py+25*sin(rotation),cos(rotation)*(allGuns[i].velocity+curSpeed)+((rand()%2)-1),sin(rotation)*(allGuns[i].velocity+curSpeed)+((rand()%2)-1),static_cast<double>(allGuns[i].dmg)});
-				//allBullets.push_back({py+24*cos(rotation),allG,0,0});
+				allBullets.push_back({px+(hitBoxX+5)*cos(rotation),py+(hitBoxX+5)*sin(rotation),cos(rotation)*(allGuns[i].velocity+curSpeed)+((rand()%2)-1),sin(rotation)*(allGuns[i].velocity+curSpeed)+((rand()%2)-1),static_cast<double>(allGuns[i].dmg)});
 				ammo = ammo -1;
 				allGuns[i].ammo = allGuns[i].ammo-1;
 				allGuns[i].firstShot = false;
@@ -190,12 +189,12 @@ void plane::updatePlane(double r,vector<bool> keys){
 	if(curSpeed<=1.5&&downForce<5-1/60.0&&py<10380){
 		downForce = downForce +1.0/60.0;
 	}
-	else if (curSpeed<=3.0&&downForce<7-1/60.0&&py<10080) {
-		downForce = downForce + 1.0/60.0;
-	}
-	else if(curSpeed>3.0&&downForce>1.0/120.0&&(rotation>-M_PI/4||rotation<-3*M_PI/4)){
-		downForce = downForce -1/120.0;
-		curSpeed = curSpeed+1/120.0;
+	//else if (curSpeed<=3.0&&downForce<7-1/60.0&&py<10080) {
+	//	downForce = downForce + 1.0/60.0;
+	//}
+	else if(curSpeed>3.0&&downForce>1.0/60.0){
+		downForce = downForce -1/60.0;
+		curSpeed = curSpeed+1/60.0;
 	}
 
 	curSpeed = (curSpeed <0.0)?0.0:curSpeed;

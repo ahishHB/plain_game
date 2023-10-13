@@ -253,14 +253,16 @@ void drawRect(SDL_Renderer *gRenderer1,int x,int y,int w,int h,int r=255,int g=2
 
 void displayAllBulletes(int px,int py){
 	for(int i =0;i<globalBullets::allBullets.size();i=i+1){
-		if((std::abs(globalBullets::allBullets[i][0]-px)<980)&&(std::abs(globalBullets::allBullets[i][1]-py)<540)){
-			drawRect(gRenderer,globalBullets::allBullets[i][0]-px+980,globalBullets::allBullets[i][1]-py+540,(6+2*globalBullets::allBullets[i][4])/2,(6+2*globalBullets::allBullets[i][4])/2,255,50,0);
+		if((std::abs(globalBullets::allBullets[i][0]-px)<960)&&(std::abs(globalBullets::allBullets[i][1]-py)<540)){
+			drawRect(gRenderer,globalBullets::allBullets[i][0]-px+960,globalBullets::allBullets[i][1]-py+540,(6+2*globalBullets::allBullets[i][4])/2,(6+2*globalBullets::allBullets[i][4])/2,255,50,0);
 		}
 	}
 }
 void displayPlane(const plane &p1,int playerX,int playerY){
 	SDL_Point temp ={p1.hitBoxX/2,p1.hitBoxY/2};		// center of the plane to rotate the image
-	SDL_Rect dstRect= {(int)((SCREEN_WIDTH/2)+(p1.px-playerX)),(int)((SCREEN_HEIGHT/2)+(p1.py-playerY)),p1.hitBoxX,p1.hitBoxY}; //where the player image is placed
+	//SDL_Point temp ={0,0};		// center of the plane to rotate the image
+	SDL_Rect dstRect= {(int)((SCREEN_WIDTH/2.0)+(p1.px-playerX)-p1.hitBoxX/2.0),(int)((SCREEN_HEIGHT/2.0)+(p1.py-playerY)-p1.hitBoxY/2.0),p1.hitBoxX,p1.hitBoxY}; //where the player image is placed
+	//SDL_Rect dstRect= {(int)((SCREEN_WIDTH/2)+(p1.px-playerX)),(int)((SCREEN_HEIGHT/2)+(p1.py-playerY)),p1.hitBoxX,p1.hitBoxY}; //where the player image is placed
 	SDL_RenderCopyEx(gRenderer,rPointer,NULL,&dstRect,p1.rotation*(180/M_PI),&temp,(SDL_RendererFlip)SDL_FLIP_NONE); // copy player plane to renderer
 }
 
@@ -880,7 +882,7 @@ int main(){
 				
 				//### update renderer ###//
 				SDL_RenderClear(gRenderer);
-				srcRect.x = player.px - SCREEN_WIDTH/2 ;
+				srcRect.x = player.px - SCREEN_WIDTH/2  ;
 				srcRect.y = player.py - SCREEN_HEIGHT/2 ;
 				SDL_RenderCopy(gRenderer,rSky,&srcRect,NULL); //copy skybox to renderer
 				displayPlane(player, player.px, player.py);
@@ -889,7 +891,8 @@ int main(){
 
 				//drawRect(gRenderer,, int y, int w, int h)
 				
-				drawRect(gRenderer, 979, 539, 2, 2,255,0,0);
+				
+				drawRect(gRenderer, 958, 538, 2, 2,255,0,0);
 				//	HUD updates	
 				rectForText = {10,1000,50,20};
 				colorForText = {0,255,0};

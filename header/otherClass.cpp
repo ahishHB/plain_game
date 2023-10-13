@@ -115,8 +115,14 @@ void engine::printAll(){
 	print(eSpeed);
 }
 double engine::cal(double alt,double speed){
-	double re = calculate(alt/1000.0,eAlt) + calculate(speed,eSpeed);
-	re = re*(enginePerc);
+	double re;
+	if(speed > 5){
+		re = calculate(alt/1000.0,eAlt) + calculate(speed,eSpeed);
+	}
+	else{
+		re = 0.001;
+	} 
+	re = re*enginePerc;
 	//std::cout<<re<<std::endl;
 	return re;
 }
