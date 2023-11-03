@@ -24,6 +24,9 @@ class plane:public globalBullets{
 		int ammo;
 		int hitBoxX;
 		int hitBoxY;
+		int knockbackX;
+		int knockbackY;
+		int knockbackMul;
 		vector<gun> allGuns;
 		aeroframe body = aeroframe();
 		engine eng = engine();

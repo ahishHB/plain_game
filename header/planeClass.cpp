@@ -14,10 +14,13 @@
 // checks collisions between bullets and planes
 void plane::checkCollision(){
 	for(int i=0;i<allBullets.size();i=i+1){
-		if(1){		//within the  hit box
-			body.aeroCurHp = body.aeroCurHp - allBullets[i][4];	//dmg 
-			px = px + (allBullets[i][4]*(allBullets[i][2]*0.001));//knockback
-			py = py + (allBullets[i][4]*(allBullets[i][3]*0.001));//knockback
+		if((allBullets[i][0]>px-20&&allBullets[i][0]<px+20)&&(allBullets[i][1]>py-20&&allBullets[i][1]<py+20)){		//within the  hit box
+			//body.aeroCurHp = body.aeroCurHp - allBullets[i][4];	//dmg 
+			//px = px + (allBullets[i][4]*(allBullets[i][2]*0.001));//knockback
+			//py = py + (allBullets[i][4]*(allBullets[i][3]*0.001));//knockback
+			knockbackX  = knockbackX + (allBullets[i][2])*knockbackMul;		
+			knockbackY = knockbackY + (allBullets[i][3])*knockbackMul;
+			knockbackMul = knockbackMul+2.0*allBullets[i][4];	
 			allBullets.erase(allBullets.begin()+i);	//despawns the bullet
 			i=i-1;
 		}
@@ -48,6 +51,9 @@ plane::plane(int x,int y,aeroframe aero,engine eng,vector<gun> gunz){
 	}
 	hitBoxX = 35 + (eng.enginePow/5-2)*5;
 	hitBoxY = hitBoxX/2;
+	knockbackMul =1;
+	knockbackX =0;
+	knockbackY =0;
 }
 
 void plane::normalR(){
@@ -64,7 +70,7 @@ void plane::updatePlane(double r,vector<bool> keys){
 		counter =0;
 	}
 	counter = counter +1;
-
+	checkCollision();
 	// shooting handler
 	
 	if(keys[6]){
@@ -209,6 +215,10 @@ void plane::updatePlane(double r,vector<bool> keys){
 	//std::cout<<"rotation:"<<rotation<<" "<<altForCal<<" acc:"<<acc<<" cur:"<<curSpeed<<std::endl;
 	py = py + sin(rotation)*curSpeed + downForce ;//+3 is y axis
 	px = px + cos(rotation)*curSpeed;
-	//		###  end plane position  ###  
 
+	px = px + knockbackX/2.0;
+	knockbackX = knockbackX - knockbackX/2.0;
+	py = py + knockbackY/2.0;
+	knockbackY = knockbackY - knockbackY/2.0;
+	//		###  end plane position  ###  
 }

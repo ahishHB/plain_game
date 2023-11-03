@@ -7,6 +7,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include "header/aiController.hpp"
 #include "header/bulletClass.hpp"
 #include "header/planeClass.hpp"
 #include "header/otherClass.hpp"
@@ -297,6 +298,7 @@ int main(){
 	
 	unsigned int seed;
 	vector <bool> keys;		//all input keys
+	vector <bool> otherKeys;
 	vector<vector<double>> engAlt;	// all possible engineAlt configs
 	vector<vector<double>> engSp;	// same as above (0-6)
 	vector<double> dragAlt;			//
@@ -307,12 +309,15 @@ int main(){
 	vector<vector<double>> turnSpeed;//
 	SDL_Rect srcRect= {0,0,SCREEN_WIDTH-25,SCREEN_HEIGHT-12}; 	//picture of the entire sky and offsets
 	SDL_Point mousePos;	
+	SDL_Point otherMousePos;
 	engine e1;
 	aeroframe a1;
 	vector<gun> g1;
 	plane player;
+	vector<plane*> otherPlanes;
 	SDL_Rect rectForText;
 	SDL_Color colorForText;
+
 	fillVectorDrag(dragAlt, dragSp, dragRdiff);
 	fillVectorEngine(engAlt, engSp);
 	fillVectorGravity(gravAlt, gravWg);
@@ -323,6 +328,8 @@ int main(){
 	int gun1VelSel,gun1dmgSel,gun1AmmoSel,gun1RateSel,gun1Wg,gun1Bool;
 	int gun2VelSel,gun2dmgSel,gun2AmmoSel,gun2RateSel,gun2Wg,gun2Bool;
 	int gun3VelSel,gun3dmgSel,gun3AmmoSel,gun3RateSel,gun3Wg,gun3Bool;
+	double *displayAroundThisPx;
+	double *displayAroundThisPy;
 
 	//engine
 	int engPowSel;
@@ -806,6 +813,8 @@ int main(){
 				g1.push_back(gun(gun3AmmoSel,gun3dmgSel,gun3VelSel,gun3RateSel));
 			}
 			player = plane(SCREEN_WIDTH/2 +200,2200,a1,e1,g1);	
+			otherPlanes.push_back(new plane(SCREEN_WIDTH/2 +200,2100,a1,e1,g1));	
+			otherPlanes.push_back(new plane(SCREEN_WIDTH/2 +200,2000,a1,e1,g1));
 			/*
 			here is where u set player and enemy plane char 
 			here is where u have to read from a file and select a specific value
@@ -817,6 +826,7 @@ int main(){
 			player.curSpeed = 15;
 			player.px = 1000;
 			player.py = 10383;
+			player.py = 2200;
 			counter =0;
 			//clear bullet and add ammo to all 
 			//### event  ###//
@@ -856,6 +866,10 @@ int main(){
 			keys = {false,false,false,false,false,false,false,false};//{w,s,a,d,quit,esc,leftclick,rightclick}
 			mousePos = {SCREEN_WIDTH/2,SCREEN_HEIGHT/2};
 			counter =0;
+			//displayAroundThisPx = &player.px;
+			//displayAroundThisPy = &player.py;
+			displayAroundThisPx = &otherPlanes[0]->px;
+			displayAroundThisPy = &otherPlanes[0]->py;
 			while(!keys[4]){
 				gameRunTime = SDL_GetTicks();
 
@@ -878,15 +892,18 @@ int main(){
 				globalBullets::bulletsUpdate();
 				player.updatePlane(getAngle(mousePos.x,mousePos.y),keys);
 
-
 				
 				//### update renderer ###//
 				SDL_RenderClear(gRenderer);
-				srcRect.x = player.px - SCREEN_WIDTH/2  ;
-				srcRect.y = player.py - SCREEN_HEIGHT/2 ;
+				srcRect.x = *displayAroundThisPx - SCREEN_WIDTH/2  ;
+				srcRect.y = *displayAroundThisPy - SCREEN_HEIGHT/2 ;
 				SDL_RenderCopy(gRenderer,rSky,&srcRect,NULL); //copy skybox to renderer
-				displayPlane(player, player.px, player.py);
-				displayAllBulletes(player.px,player.py);	
+				for(int i=0;i<otherPlanes.size();i=i+1){
+					targetPlane(otherPlanes[i], &player);
+					displayPlane(*(otherPlanes[i]), *displayAroundThisPx, *displayAroundThisPy);	
+				}
+				displayPlane(player, *displayAroundThisPx, *displayAroundThisPy);
+				displayAllBulletes(*displayAroundThisPx,*displayAroundThisPy);	
 				//drawRect(gRenderer,,, 2, 2,255,0,0);
 
 				//drawRect(gRenderer,, int y, int w, int h)
@@ -930,6 +947,12 @@ int main(){
 				}
 
 				// #### 		    #### // 
+			}
+			for(int i =0;i<otherPlanes.size();i=i+1){
+				free(otherPlanes[i]);
+				otherPlanes.erase(otherPlanes.begin()+i);
+				i=i-1;
+
 			}
 			//state = 0;// main menu
 			break;
