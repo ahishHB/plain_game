@@ -31,7 +31,7 @@ void plane::printPlane(){
 }
 plane::plane(){}
 
-plane::plane(int x,int y,aeroframe aero,engine eng,vector<gun> gunz){
+plane::plane(int x,int y,aeroframe aero,engine eng,vector<gun> gunz,double rot){
 	px = x;
 	py = y;
 	downForce = 0.0;
@@ -45,6 +45,8 @@ plane::plane(int x,int y,aeroframe aero,engine eng,vector<gun> gunz){
 	rdiff = 0;
 	altForCal = 0;
 	counter = 0;
+	state=0;
+	ammo =0;
 	for(int i=0;i<allGuns.size();i=i+1){
 		ammo = allGuns[i].ammo +ammo;
 
@@ -54,6 +56,7 @@ plane::plane(int x,int y,aeroframe aero,engine eng,vector<gun> gunz){
 	knockbackMul =1;
 	knockbackX =0;
 	knockbackY =0;
+	r = rot;
 }
 
 void plane::normalR(){
@@ -65,10 +68,15 @@ void plane::normalR(){
 	}
 }
 
-void plane::updatePlane(double r,vector<bool> keys){
+void plane::updatePlane(double rTo,vector<bool> keys){
+	if(abs(rTo)<M_PI){
+		r = rTo;
+	}
+
 	if(counter>=120){
 		counter =0;
 	}
+
 	counter = counter +1;
 	checkCollision();
 	// shooting handler

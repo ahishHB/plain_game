@@ -75,7 +75,7 @@ double aeroframe::calGrav(double alt){
 }
 
 double aeroframe::calDrag(double alt,double speed,double rdiff){
-	double re = calculate(alt/1000.0,dAlt) + 2.0*calculate(speed,dSpeed) + 4.0*calculate(rdiff*100.0,dRdiff);
+	double re = calculate(alt/1000.0,dAlt) + 2.0*calculate(speed,dSpeed) + 6.0*calculate(rdiff*100.0,dRdiff);
 	//std::cout<<calculate(rdiff*100.0,dRdiff)<<std::endl;
 	//std::cout<<calculate(speed,dSpeed)<<std::endl;
 	re = re*Cd;

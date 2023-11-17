@@ -802,7 +802,7 @@ int main(){
 
 			seed = 12;
 			srand(seed);
-			e1 = engine(engPowSel,engAlt[0],engSp[engSpSel]);
+			e1 = engine(engPowSel,engAlt[engAltSel],engSp[engSpSel]);
 			a1 = aeroframe(aeroHpSel,aeroWgSel,1,gravAlt,gravWg,dragAlt,dragSp,dragRdiff,turnSpeed[turnSel]);	
 			g1.clear();
 			g1.push_back(gun(gun1AmmoSel,gun1dmgSel,gun1VelSel,gun1RateSel));
@@ -813,7 +813,7 @@ int main(){
 				g1.push_back(gun(gun3AmmoSel,gun3dmgSel,gun3VelSel,gun3RateSel));
 			}
 			player = plane(SCREEN_WIDTH/2 +200,2200,a1,e1,g1);	
-			otherPlanes.push_back(new plane(SCREEN_WIDTH/2 +200,2100,a1,e1,g1));	
+			otherPlanes.push_back(new plane(SCREEN_WIDTH/2 +200,2100,aeroframe(aeroHpSel,aeroWgSel,1,gravAlt,gravWg,dragAlt,dragSp,dragRdiff,turnSpeed[turnSel]),engine(engPowSel,engAlt[0],engSp[0]),g1));	
 			otherPlanes.push_back(new plane(SCREEN_WIDTH/2 +200,2000,a1,e1,g1));
 			/*
 			here is where u set player and enemy plane char 
@@ -866,10 +866,10 @@ int main(){
 			keys = {false,false,false,false,false,false,false,false};//{w,s,a,d,quit,esc,leftclick,rightclick}
 			mousePos = {SCREEN_WIDTH/2,SCREEN_HEIGHT/2};
 			counter =0;
-			//displayAroundThisPx = &player.px;
-			//displayAroundThisPy = &player.py;
-			displayAroundThisPx = &otherPlanes[0]->px;
-			displayAroundThisPy = &otherPlanes[0]->py;
+			displayAroundThisPx = &player.px;
+			displayAroundThisPy = &player.py;
+			//displayAroundThisPx = &otherPlanes[0]->px;
+			//displayAroundThisPy = &otherPlanes[0]->py;
 			while(!keys[4]){
 				gameRunTime = SDL_GetTicks();
 
@@ -895,7 +895,7 @@ int main(){
 				
 				//### update renderer ###//
 				SDL_RenderClear(gRenderer);
-				srcRect.x = *displayAroundThisPx - SCREEN_WIDTH/2  ;
+				srcRect.x = *displayAroundThisPx - SCREEN_WIDTH/2 ;
 				srcRect.y = *displayAroundThisPy - SCREEN_HEIGHT/2 ;
 				SDL_RenderCopy(gRenderer,rSky,&srcRect,NULL); //copy skybox to renderer
 				for(int i=0;i<otherPlanes.size();i=i+1){
@@ -936,6 +936,18 @@ int main(){
 				if(counter<100&&counter>0&&((player.curSpeed<1.5&&player.py<10100)||(player.curSpeed>1.5&&player.py>10100))){
 					DisplayText("!!CAUTION!!", rectForText, colorForText);
 				}
+
+				// MINI MAP (scale 1/4 of 1920 by 1080) //
+				// 38.45 * py max=270
+				// 38.45 * py max=401 
+				drawRect(gRenderer,SCREEN_WIDTH-402, SCREEN_HEIGHT-271, 401, 270,0,255,0,false);
+				drawRect(gRenderer, SCREEN_WIDTH-402+player.px/38.45,SCREEN_HEIGHT-271+player.py/38.45,3,3,0,255,0);	
+				for(auto i:otherPlanes){
+					drawRect(gRenderer, SCREEN_WIDTH-405+i->px/38.45,SCREEN_HEIGHT-274+i->py/38.45,3,3,255,0,0);	
+				}
+				//cout<<SCREEN_WIDTH-402+player.px/38.45<<endl;
+				//			//
+
 				SDL_RenderPresent(gRenderer);
 				//	end of HUD updates
 
@@ -947,12 +959,6 @@ int main(){
 				}
 
 				// #### 		    #### // 
-			}
-			for(int i =0;i<otherPlanes.size();i=i+1){
-				free(otherPlanes[i]);
-				otherPlanes.erase(otherPlanes.begin()+i);
-				i=i-1;
-
 			}
 			//state = 0;// main menu
 			break;
@@ -1024,11 +1030,14 @@ int main(){
 							break;
 						case 3:
 							state = 4;
+							for(int i =0;i<otherPlanes.size();i=i+1){
+								free(otherPlanes[i]);
+								otherPlanes.erase(otherPlanes.begin()+i);
+								i=i-1;
+							}
 							break;
 						case 4:
 							state =0;
-							break;
-					
 					}
 				}
 				drawRect(gRenderer,topLeftMenuX,topLeftMenuY,280,500,51,255,153);
